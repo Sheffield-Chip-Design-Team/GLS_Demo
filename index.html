@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<title>TinyTapeout VGA 1D Cellular Automata Simulation</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="author" content="Alexander Mordvintsev">
+<meta name="robots" content="index, follow">
+<meta name="language" content="English">
+<!-- Twitter -->
+<meta property="twitter:card" content="summary_large_image">
+<meta property="twitter:url" content="https://znah.net/tt09">
+<meta property="twitter:title" content="TinyTapeout VGA 1D Cellular Automata Simulation">
+<meta property="twitter:description" content="TinyTapeout VGA 1D Cellular Automata Simulation">
+<meta property="twitter:image" content="https://znah.net/tt09/card.jpg">
+
+<script src="https://cdn.counter.dev/script.js" data-id="8bf0ceb7-d869-4a63-ba6b-32b18ec544f1"></script>
+<link rel="stylesheet" href="style.css">
+<div id="demo">
+    <canvas id="c"></canvas>
+    <div id="controls">
+        <div id="phase">phase</div>
+        <div id="breakpoints_div">
+            <input type="checkbox" id="breakpoints" name="breakpoints" checked />
+            <label for="breakpoints">slowdown at rows 0,1,4</label>
+        </div>
+        <div>
+            Speed: <div id="speed_display"></div>
+            <input id="speed" type="range" min="-5" max="16" value="0">
+        </div>
+        <div>
+            Show: 
+            <select id="show_select">
+                <option value="circuit+screen">circuit+screen</option>
+                <option value="screen">screen</option>
+                <option value="circuit">circuit</option>
+            </select>
+        </div>
+        <div>
+            Circuit: 
+            <select id="circuit_select" style="width: 150px;">
+                <option value="09_tt_um_znah_vga_ca">VGA CA (znah)</option>
+                <option value="05_tt_um_dinogame">05_tt_um_dinogame</option>
+                <option value="08_tt_um_a1k0n_vgadonut">08_tt_um_a1k0n_vgadonut</option>
+                <option value="07_tt_um_algofoogle_raybox_zero">07_tt_um_algofoogle_raybox_zero</option>
+                <!-- <option value="07_tt_um_pongsagon_tiniest_gpu">07_tt_um_pongsagon_tiniest_gpu</option> -->
+                <option value="08_tt_um_a1k0n_nyancat">Nyan Cat (a1k0n)</option>
+                <option value="09_tt_um_rejunity_vga_test01">Drop (ReJ et al.)</option>
+                <option value="08_tt_um_top">Flame (K. Beckmann & L. Mårtensson)</option>
+                <option value="09_tt_um_vga_clock">VGA Clock (Matt Venn)</option>
+                <option value="09_tt_um_2048_vga_game">2048 Game (Uri Shaked)</option>
+                <option value="10_tt_um_tts">SHARC Tiny Tapestation</option>
+            </select>
+            <span id="circuit_info"></span>
+        </div>        
+    </div>
+    <div id="view_controls">
+        <button id="zoom_in" title="Zoom In">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line><line x1="11" y1="8" x2="11" y2="14"></line><line x1="8" y1="11" x2="14" y2="11"></line></svg>
+        </button>
+        <button id="zoom_out" title="Zoom Out">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line><line x1="8" y1="11" x2="14" y2="11"></line></svg>
+        </button>
+        <button id="toggle_rotate">
+            <svg class="icon-rotate" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display: none;"><polyline points="23 4 23 10 17 10"></polyline><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path></svg>
+            <svg class="icon-move" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="5 9 2 12 5 15"></polyline><polyline points="9 5 12 2 15 5"></polyline><polyline points="15 19 12 22 9 19"></polyline><polyline points="19 9 22 12 19 15"></polyline><line x1="2" y1="12" x2="22" y2="12"></line><line x1="12" y1="2" x2="12" y2="22"></line></svg>
+        </button>
+    </div>
+</div>
+<main>
+    <h1>TinyTapeout VGA Circuits Simulator</h1>
+    <p class="author">
+        by <a href="https://znah.net">Alexander Mordvintsev</a>
+    </p>
+
+    <iframe width="560" height="315" src="https://www.youtube.com/embed/J81WQrIBrpw?si=Z6yBNfC2n9-nDaEL" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+    
+    <p>
+        <b>Update (2025-01-27)</b> This project started an effort to learn more about circuit design toolchain by making a script that would "reverse-engineer" and simulate a circuit from just a GDSII file. In the beginning it only worked with my own <a href="https://github.com/znah/tt09-vga-ca">1D CA design</a>, but after a <a href="https://www.linkedin.com/feed/update/urn:li:activity:7282444199445061632/">warm</a> <a href="https://news.ycombinator.com/item?id=42631629">response</a> from the open source silicon community I updated the simulator to work with a few other circuits. Now, it can automatically determine the function of almost all Sky130 PDK standard cells. I also made the circuit simulator to show the gate flipping cascades in a heatmap-style visualization.
+    </p>
+
+    <p>
+        <b>(original description)</b> This is a gate-level simulation of my <a href="https://tinytapeout.com/">TinyTapeout</a> '09 submission running directly in your browser. The circuit occupies a single 160x100 μm tile on a multiproject chip and generates a 60fps 640x480 VGA signal that forms a scrolling animation of several <a href="https://mathworld.wolfram.com/ElementaryCellularAutomaton.html">elementary 1D cellular automata</a> rules. Most of the tile area is occupied by two 160-bit shift registers: one (left) stores the current image line, while another (right) stores the first line of the next frame (4th line of the current).
+    </p>
+    <p>
+        This demo combines a tiny custom WebAssembly gate-level <a href="https://github.com/znah/tt09/blob/main/gates.c">simulator</a> with a <a href="https://google.github.io/swissgl/">SwissGL</a>-based interactive visualization of gate activations. The overlay displays the content of the simulated VGA screen and the current ray position.
+    </p>
+    <p>Links:</p>
+    <ul>
+        <li><a href="https://github.com/znah/tt09-vga-ca">ASIC design repository</a> (<a href="https://github.com/znah/tt09-vga-ca/blob/main/src/project.v">project.v</a>)</li>
+        <li><a href="https://github.com/znah/tt09">Demo page repository</a></li>
+        <li><a href="https://tinytapeout.com/runs/tt09/tt_um_znah_vga_ca">TinyTapeout'09 tile</a></li>
+        <li><a href="https://znah.net/tt09-vga-ca/">Circuit 3D view</a></li>
+        <li><a href="https://news.ycombinator.com/item?id=42631629">Hacker News discussion</a></li>
+        <li><a href="https://www.linkedin.com/feed/update/urn:li:activity:7282444199445061632/">Linkedin post</a></li>
+    </ul>
+<!-- 
+    <iframe id="video" width="560" height="315" src="https://www.youtube-nocookie.com/embed/XtRncOmQN7c?si=HIwZzaOeo9nyTHsK" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe> -->
+
+
+</main>
+
+<script src="swissgl.js"></script>
+<script src="sim.js"></script>
+
+<script>
+    "use strict";
+    const $ = q=>document.querySelector(q);
+    const canvas = $('#c');
+    const glsl = SwissGL(canvas);
+
+    const ca_project = '09_tt_um_znah_vga_ca';
+    let sim;
+    let project;
+    async function init() {
+        sim = await VGASimulator.init(glsl);
+        await load_circuit();
+        glsl.loop(frame);
+    }
+
+    async function load_circuit() {
+        project = $('#circuit_select').value;
+        $('#circuit_info').innerText = 'loading...';
+        $('#phase').innerText = project==ca_project ? 'row 0: init' : '';
+        $('#breakpoints_div').style.display = project==ca_project ? 'block' : 'none';
+        const url = `gds/${project}.bin`;
+        const response = await fetch(url);
+        const data = await response.arrayBuffer();
+        sim.load_circuit_bin(data);
+        const [tt, ...rest] = project.split('_');
+        const name = rest.join('_');
+        $('#circuit_info').innerHTML = `<a href="https://tinytapeout.com/runs/tt${tt}/${name}">project info</a>`;
+        update_toggle_button();
+    }
+    $('#circuit_select').onchange = load_circuit;
+
+    function update_toggle_button() {
+        const toggleRotateBtn = $('#toggle_rotate');
+        const rotateIcon = toggleRotateBtn.querySelector('.icon-rotate');
+        const moveIcon = toggleRotateBtn.querySelector('.icon-move');
+        const rotateMode = sim.view.rotateMode;
+        toggleRotateBtn.style.backgroundColor = rotateMode ? 'rgba(100,100,0,0.5)' : 'rgba(0,0,0,0.5)';
+        rotateIcon.style.display = rotateMode ? 'block' : 'none';
+        moveIcon.style.display = rotateMode ? 'none' : 'block';
+        toggleRotateBtn.title = rotateMode ? 'Rotate mode. Click to switch to move.' : 'Move mode. Click to switch to rotate.';
+    }
+
+    const zoomInBtn = $('#zoom_in');
+    const zoomOutBtn = $('#zoom_out');
+    const toggleRotateBtn = $('#toggle_rotate');
+    zoomInBtn.onclick = () => {
+        sim.view.log2zoom += 0.5;
+    };
+    zoomOutBtn.onclick = () => {
+        sim.view.log2zoom = Math.max(0.0, sim.view.log2zoom - 0.5);
+    };
+    toggleRotateBtn.onclick = () => {
+        sim.view.rotateMode = !sim.view.rotateMode;
+        update_toggle_button();
+    };
+
+    function updateStatus(line) {
+        if (project != ca_project)
+            return;
+        let status = 'copy the previous row';
+        if (line < 0 || line >= VGA_SCREEN_H) {
+            status = 'offscreen (skip)';
+        } else if (line == 0) {
+            status = 'recall the starting row';
+        } else if (line == 4) {
+            status = 'rule application + store the first row for the next frame'
+        } else if (line%4 == 0) {
+            status = 'apply CA rule';
+        }
+        $('#phase').innerText = `row ${line}: ${status}`;
+        const breakpoints = $('#breakpoints').checked;
+        if (breakpoints && (line == 0 || line == 1 || line == 4)) {
+            $('#speed').value = 0;
+            $('#breakpoints_div').classList.remove('flash-once');
+            void $('#breakpoints_div').offsetWidth;
+            $('#breakpoints_div').classList.add('flash-once');            
+            return true;
+        }
+    }
+
+    function frame() {
+        glsl.adjustCanvas();
+
+        const speed = $('#speed').value;
+        $('#speed_display').textContent = '2^'+speed;
+        const step_n = Math.pow(2, speed);
+        sim.multistep(step_n, updateStatus);
+
+        //sim.view.pan += 0.001;
+
+        const show = $('#show_select').value;
+        if (show =='circuit') {
+            sim.draw_circuit(step_n);
+        } else if (show == 'screen') {
+            sim.draw_screen(step_n, true);
+        } else if (show == 'circuit+screen') {
+            sim.draw_circuit(step_n);
+            sim.draw_screen(step_n, false);
+        }
+    }
+
+    init();
+</script>
