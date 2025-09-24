@@ -1,8 +1,8 @@
 <!DOCTYPE html>
-<title>TinyTapeout VGA 1D Cellular Automata Simulation</title>
+<title>TinyTapeout - Tiny Tapestation</title>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="author" content="Alexander Mordvintsev">
+<meta name="author" content="James Ashie Kotey - Adapted from the 1d Automata demo by Alexander Mordvintsev">
 <meta name="robots" content="index, follow">
 <meta name="language" content="English">
 <!-- Twitter -->
@@ -70,27 +70,14 @@
     <p class="author">
         by <a href="https://znah.net">Alexander Mordvintsev</a>
     </p>
-
-    <iframe width="560" height="315" src="https://www.youtube.com/embed/J81WQrIBrpw?si=Z6yBNfC2n9-nDaEL" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
-    
-    <p>
-        <b>Update (2025-01-27)</b> This project started an effort to learn more about circuit design toolchain by making a script that would "reverse-engineer" and simulate a circuit from just a GDSII file. In the beginning it only worked with my own <a href="https://github.com/znah/tt09-vga-ca">1D CA design</a>, but after a <a href="https://www.linkedin.com/feed/update/urn:li:activity:7282444199445061632/">warm</a> <a href="https://news.ycombinator.com/item?id=42631629">response</a> from the open source silicon community I updated the simulator to work with a few other circuits. Now, it can automatically determine the function of almost all Sky130 PDK standard cells. I also made the circuit simulator to show the gate flipping cascades in a heatmap-style visualization.
-    </p>
-
-    <p>
-        <b>(original description)</b> This is a gate-level simulation of my <a href="https://tinytapeout.com/">TinyTapeout</a> '09 submission running directly in your browser. The circuit occupies a single 160x100 μm tile on a multiproject chip and generates a 60fps 640x480 VGA signal that forms a scrolling animation of several <a href="https://mathworld.wolfram.com/ElementaryCellularAutomaton.html">elementary 1D cellular automata</a> rules. Most of the tile area is occupied by two 160-bit shift registers: one (left) stores the current image line, while another (right) stores the first line of the next frame (4th line of the current).
-    </p>
-    <p>
         This demo combines a tiny custom WebAssembly gate-level <a href="https://github.com/znah/tt09/blob/main/gates.c">simulator</a> with a <a href="https://google.github.io/swissgl/">SwissGL</a>-based interactive visualization of gate activations. The overlay displays the content of the simulated VGA screen and the current ray position.
     </p>
     <p>Links:</p>
     <ul>
-        <li><a href="https://github.com/znah/tt09-vga-ca">ASIC design repository</a> (<a href="https://github.com/znah/tt09-vga-ca/blob/main/src/project.v">project.v</a>)</li>
-        <li><a href="https://github.com/znah/tt09">Demo page repository</a></li>
-        <li><a href="https://tinytapeout.com/runs/tt09/tt_um_znah_vga_ca">TinyTapeout'09 tile</a></li>
-        <li><a href="https://znah.net/tt09-vga-ca/">Circuit 3D view</a></li>
-        <li><a href="https://news.ycombinator.com/item?id=42631629">Hacker News discussion</a></li>
-        <li><a href="https://www.linkedin.com/feed/update/urn:li:activity:7282444199445061632/">Linkedin post</a></li>
+        <li><a href="https://github.com/Sheffield-Chip-Design-Team/Sheffield-TTX">TTS ASIC design repository</a> (<a href="https://github.com/znah/tt09-vga-ca/blob/main/src/project.v">project.v</a>)</li>
+        <li><a href="https://gds-viewer.tinytapeout.com/?process=SKY130&model=https%3A%2F%2Fsheffield-chip-design-team.github.io%2FSheffield-TTX%2F%2Ftinytapeout.gds"> TTS Circuit 3D view</a></li>
+        <li><a href="https://github.com/znah/tt09"> Original Demo page repository</a></li>
+
     </ul>
 <!-- 
     <iframe id="video" width="560" height="315" src="https://www.youtube-nocookie.com/embed/XtRncOmQN7c?si=HIwZzaOeo9nyTHsK" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe> -->
@@ -107,7 +94,7 @@
     const canvas = $('#c');
     const glsl = SwissGL(canvas);
 
-    const ca_project = '09_tt_um_znah_vga_ca';
+    const ca_project = '10_tt_um_tts';
     let sim;
     let project;
     async function init() {
